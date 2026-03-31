@@ -16,19 +16,21 @@ A full-stack fintech mobile application built with **Flutter** and **Laravel**, 
 
 ---
 
-## Features
+## Features & Implementation Status
 
-- **Authentication** — Register, login, logout with JWT via Laravel Sanctum
-- **Wallet** — Real-time balance display with animated count-up
-- **Send Money** — Instant Payzo-to-Payzo transfers by email
-- **Fund Wallet** — Paystack WebView payment flow with webhook verification
-- **Airtime Top-up** — MTN, Airtel, Glo, 9mobile support
-- **Bill Payments** — TV (DSTV, GOtv, Startimes) and Electricity
-- **Payment Links** — Generate and share payment codes
-- **Virtual Cards** — Create and manage virtual debit cards
-- **Transaction History** — Full paginated history with status indicators
-- **Dark / Light Mode** — Persisted theme preference
-- **Profile Avatar** — Camera and gallery photo picker
+| Feature | Status | Notes |
+|---|---|---|
+| Authentication | ✅ Live | Register, login, logout via Laravel Sanctum |
+| Wallet Balance | ✅ Live | Real-time balance fetch and animated display |
+| Send Money | ✅ Live | Instant wallet-to-wallet transfer by email |
+| Fund Wallet | ✅ Live | Paystack WebView + webhook + balance credit |
+| Transaction History | ✅ Live | Paginated, real data from database |
+| Payment Links | ✅ Live | Create, share, and pay links — wallets debit/credit correctly |
+| Airtime Top-up | ⚠️ Simulated | Wallet is debited and transaction is recorded, but no real airtime provider (e.g. VTPass) is integrated — no actual airtime is sent |
+| Bill Payments | ⚠️ Simulated | Wallet is debited and transaction is recorded, but no real bill provider API is called — no actual bill is paid |
+| Virtual Cards | ⚠️ Simulated | Card records are created in the database with generated details, but no real card issuer (e.g. Sudo, Stripe Issuing) is integrated |
+| Dark / Light Mode | ✅ Live | Persisted via SharedPreferences |
+| Profile Avatar | ✅ Live | Camera and gallery photo picker, persisted locally |
 
 ---
 
@@ -117,8 +119,22 @@ flutter pub get
 flutter run
 ```
 
-> For Android emulator, the backend URL is pre-configured as `http://10.0.2.2:8000/api`.  
+> For Android emulator, the backend URL is pre-configured as `http://10.0.2.2:8000/api`.
 > Update `lib/core/constants.dart` for a real device or production URL.
+
+---
+
+## To Make Airtime, Bills & Virtual Cards Fully Live
+
+These features are UI and backend complete — they just need a third-party provider plugged in:
+
+| Feature | Suggested Provider |
+|---|---|
+| Airtime / Data | [VTPass](https://vtpass.com) / [Nellobytes](https://nellobytes.com) |
+| Bill Payments | [VTPass](https://vtpass.com) / [BuyPower](https://buypower.ng) |
+| Virtual Cards | [Sudo Africa](https://sudo.africa) / [Stripe Issuing](https://stripe.com/issuing) |
+
+Each service in `payzo-web/app/Services/` (`TopupService.php`, `BillService.php`, `VirtualCardService.php`) has a clear integration point where the provider API call should be added.
 
 ---
 
