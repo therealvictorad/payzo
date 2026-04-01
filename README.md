@@ -1,4 +1,4 @@
-# Sendr (Payzo)
+# Payzo
 
 A full-stack fintech mobile application built with **Flutter** and **Laravel**, featuring real-time wallet management, Paystack payment integration, airtime top-up, bill payments, virtual cards, and payment links.
 
