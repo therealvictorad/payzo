@@ -27,9 +27,19 @@ class _VirtualCardScreenState extends ConsumerState<VirtualCardScreen> {
   Future<void> _fetchCards() async {
     setState(() => _loading = true);
     try {
-      _cards = await ref.read(virtualCardServiceProvider).getCards();
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+      final cards = await ref.read(virtualCardServiceProvider).getCards();
+      if (mounted) setState(() { _cards = cards; _loading = false; });
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _createCard() async {

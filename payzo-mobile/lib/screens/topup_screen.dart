@@ -30,7 +30,6 @@ class _TopupScreenState extends ConsumerState<TopupScreen>
   void initState() {
     super.initState();
     _tabCtrl = TabController(length: 2, vsync: this);
-    _tabCtrl.addListener(() => setState(() {}));
   }
 
   @override
@@ -52,10 +51,9 @@ class _TopupScreenState extends ConsumerState<TopupScreen>
               child: TabBarView(
                 controller: _tabCtrl,
                 physics: const NeverScrollableScrollPhysics(),
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  const _AirtimeTab(),
-                  const _WalletFundingTab(),
+                children: const [
+                  _AirtimeTab(),
+                  _WalletFundingTab(),
                 ],
               ),
             ),
@@ -512,8 +510,6 @@ class _WalletFundingTabState extends ConsumerState<_WalletFundingTab> {
               ),
 
               const SizedBox(height: 28),
-
-              const SizedBox(height: 32),
 
               // ── Fund Wallet button ─────────────────────────────────────
               SizedBox(

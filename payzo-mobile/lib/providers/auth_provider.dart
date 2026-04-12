@@ -80,6 +80,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  void clearError() => state = state.copyWith(error: null);
+
+  Future<bool> updateProfile({
+    String? nickname,
+    String? gender,
+    String? dateOfBirth,
+    String? mobile,
+    String? address,
+  }) async {
+    if (state.user == null) return false;
+    
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final updatedUser = await _ref.read(userServiceProvider).updateProfile(
+        nickname: nickname,
+        gender: gender,
+        dateOfBirth: dateOfBirth,
+        mobile: mobile,
+        address: address,
+      );
+      state = state.copyWith(user: updatedUser, isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: _parseError(e));
+      return false;
+    }
+  }
+
   String _parseError(Object e) {
     final msg = e.toString();
     if (msg.contains('401')) return 'Invalid email or password.';

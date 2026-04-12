@@ -43,7 +43,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
     Navigator.pushReplacementNamed(
       context,
-      hasToken ? AppRoutes.home : AppRoutes.login,
+      hasToken ? AppRoutes.shell : AppRoutes.login,
     );
   }
 
@@ -55,7 +55,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.darkBg,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Center(
           child: FadeTransition(
             opacity: _opacity,
@@ -86,10 +86,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'payzo',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 36,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -1.5,
@@ -99,7 +99,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   Text(
                     'Move money, effortlessly.',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.45),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.3,

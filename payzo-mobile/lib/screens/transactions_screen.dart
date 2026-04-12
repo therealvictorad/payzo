@@ -47,7 +47,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 itemBuilder: (_, __) => const TransactionItemSkeleton(),
               )
             : txState.transactions.isEmpty
-                ? _EmptyState()
+                ? const _EmptyState()
                 : ListView.builder(
                     padding: const EdgeInsets.only(top: 8, bottom: 32),
                     itemCount: txState.transactions.length,
@@ -63,6 +63,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 }
 
 class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;

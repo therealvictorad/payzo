@@ -13,12 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role'       => \App\Http\Middleware\RoleMiddleware::class,
-            'admin.dash' => \App\Http\Middleware\AdminDashboardMiddleware::class,
+            'role'           => \App\Http\Middleware\RoleMiddleware::class,
+            'admin.dash'     => \App\Http\Middleware\AdminDashboardMiddleware::class,
+            'not.frozen'     => \App\Http\Middleware\EnsureAccountNotFrozen::class,
+            'email.verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Return all validation errors in the standard API format
         $exceptions->render(function (
             \Illuminate\Validation\ValidationException $e,
             \Illuminate\Http\Request $request
@@ -32,7 +33,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Return unauthenticated errors in the standard API format
         $exceptions->render(function (
             \Illuminate\Auth\AuthenticationException $e,
             \Illuminate\Http\Request $request
@@ -42,6 +42,19 @@ return Application::configure(basePath: dirname(__DIR__))
                     'status'  => 'error',
                     'message' => 'Unauthenticated.',
                 ], 401);
+            }
+        });
+
+        // Model not found → clean 404
+        $exceptions->render(function (
+            \Illuminate\Database\Eloquent\ModelNotFoundException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Resource not found.',
+                ], 404);
             }
         });
     })->create();

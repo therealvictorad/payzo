@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../animations/animations.dart';
 import '../core/currency.dart';
 import '../core/theme.dart';
+import '../providers/auth_provider.dart';
+import '../providers/service_providers.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/wallet_provider.dart';
 import '../widgets/app_text_field.dart';
+import '../widgets/pin_entry_sheet.dart';
 import '../widgets/primary_button.dart';
 
 class SendScreen extends ConsumerStatefulWidget {
@@ -53,12 +56,29 @@ class _SendScreenState extends ConsumerState<SendScreen>
     final amount = double.tryParse(_amountCtrl.text.trim());
     if (amount == null || amount <= 0) return;
 
+    final user = ref.read(authProvider).user;
+    if (user != null && user.hasTransactionPin) {
+      final pin = await PinEntrySheet.show(
+        context,
+        title:    'Confirm Transfer',
+        subtitle: 'Enter your 4-digit transaction PIN to continue.',
+      );
+      if (pin == null || !mounted) return;
+
+      try {
+        await ref.read(transactionServiceProvider).verifyPin(pin);
+      } catch (e) {
+        if (!mounted) return;
+        ref.read(transactionProvider.notifier).setError(e.toString());
+        return;
+      }
+    }
+
     final success = await ref
         .read(transactionProvider.notifier)
         .transfer(_emailCtrl.text.trim(), amount);
 
     if (success) {
-      // Refresh wallet balance
       await ref.read(walletProvider.notifier).fetch();
       setState(() => _showSuccess = true);
       _successCtrl.forward();
@@ -333,6 +353,8 @@ class _SuccessView extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 48),
               PrimaryButton(label: 'Done', onTap: onDone),

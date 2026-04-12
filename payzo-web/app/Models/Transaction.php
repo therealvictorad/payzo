@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Transaction extends Model
 {
     protected $fillable = [
+        'reference',
+        'idempotency_key',
         'sender_id',
         'receiver_id',
         'amount',
@@ -21,11 +23,9 @@ class Transaction extends Model
     {
         return [
             'amount' => 'decimal:2',
-            'meta'   => 'array',     // auto encode/decode JSON
+            'meta'   => 'array',
         ];
     }
-
-    // ─── Relationships ────────────────────────────────────────────────────────
 
     public function sender(): BelongsTo
     {

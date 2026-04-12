@@ -8,10 +8,6 @@ use Illuminate\Validation\ValidationException;
 
 class VirtualCardService
 {
-    /**
-     * Generate a new virtual card for the user.
-     * One active card per user maximum.
-     */
     public function create(User $user): array
     {
         $activeCard = VirtualCard::where('user_id', $user->id)
@@ -24,23 +20,27 @@ class VirtualCardService
             ]);
         }
 
+        $rawNumber = $this->generateCardNumber();
+        $rawCvv    = $this->generateCvv();
+
+        // Model mutators encrypt card_number and cvv before saving
         $card = VirtualCard::create([
             'user_id'        => $user->id,
-            'card_number'    => $this->generateCardNumber(),
+            'card_number'    => $rawNumber,
             'expiry'         => $this->generateExpiry(),
-            'cvv'            => $this->generateCvv(),
+            'cvv'            => $rawCvv,
             'card_holder'    => strtoupper($user->name),
             'brand'          => collect(['visa', 'mastercard'])->random(),
             'status'         => 'active',
             'spending_limit' => 500.00,
         ]);
 
-        // Return full details ONCE on creation — never again after this
+        // Return full details ONCE on creation — raw values before encryption
         return [
             'id'             => $card->id,
-            'card_number'    => $card->card_number,   // full number shown once
+            'card_number'    => $rawNumber,   // plaintext shown once only
             'expiry'         => $card->expiry,
-            'cvv'            => $card->cvv,            // CVV shown once
+            'cvv'            => $rawCvv,       // plaintext shown once only
             'card_holder'    => $card->card_holder,
             'brand'          => $card->brand,
             'status'         => $card->status,
@@ -49,16 +49,13 @@ class VirtualCardService
         ];
     }
 
-    /**
-     * Return user's cards with sensitive fields masked.
-     */
-    public function getUserCards(User $user)
+    public function getUserCards(User $user): \Illuminate\Support\Collection
     {
         return VirtualCard::where('user_id', $user->id)
             ->get()
             ->map(fn ($card) => [
                 'id'             => $card->id,
-                'masked_number'  => $card->masked_number_attribute,
+                'masked_number'  => $card->masked_number,  // uses accessor
                 'expiry'         => $card->expiry,
                 'masked_cvv'     => '***',
                 'card_holder'    => $card->card_holder,
@@ -69,11 +66,8 @@ class VirtualCardService
             ]);
     }
 
-    // ─── Generators ───────────────────────────────────────────────────────────
-
     private function generateCardNumber(): string
     {
-        // Visa prefix: 4, Mastercard prefix: 5
         $prefix = collect(['4', '5'])->random();
         return $prefix . implode('', array_map(fn () => rand(0, 9), range(1, 15)));
     }

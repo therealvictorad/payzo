@@ -2,18 +2,24 @@
 
 namespace App\Services;
 
+use App\Exceptions\InsufficientBalanceException;
 use App\Models\PaymentLink;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Repositories\TransactionRepository;
+use App\Repositories\WalletRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class PaymentLinkService
 {
-    /**
-     * Create a new payment link for the authenticated user.
-     */
+    public function __construct(
+        private readonly WalletRepository $walletRepo,
+        private readonly TransactionRepository $txRepo
+    ) {}
+
     public function create(User $user, array $data): PaymentLink
     {
         return PaymentLink::create([
@@ -25,10 +31,6 @@ class PaymentLinkService
         ]);
     }
 
-    /**
-     * Pay a payment link using the payer's wallet.
-     * Transfers funds from payer → link owner.
-     */
     public function pay(string $code, User $payer): array
     {
         $link = PaymentLink::where('code', $code)->firstOrFail();
@@ -45,21 +47,16 @@ class PaymentLinkService
             ]);
         }
 
-        if ($payer->wallet()->value('balance') < $link->amount) {
-            throw ValidationException::withMessages([
-                'amount' => 'Insufficient wallet balance.',
-            ]);
+        if (! $this->walletRepo->hasSufficientBalance($payer, $link->amount)) {
+            throw InsufficientBalanceException::make();
         }
 
         $transaction = DB::transaction(function () use ($link, $payer) {
-            // Deduct from payer
-            $payer->wallet()->lockForUpdate()->first()->decrement('balance', $link->amount);
+            $this->walletRepo->debit($payer, $link->amount);
+            $this->walletRepo->credit($link->owner, $link->amount);
 
-            // Credit link owner
-            $link->owner->wallet()->lockForUpdate()->first()->increment('balance', $link->amount);
-
-            // Record transaction
             $transaction = Transaction::create([
+                'reference'   => $this->txRepo->generateReference(),
                 'sender_id'   => $payer->id,
                 'receiver_id' => $link->user_id,
                 'amount'      => $link->amount,
@@ -71,7 +68,6 @@ class PaymentLinkService
                 ],
             ]);
 
-            // Mark link as paid
             $link->update([
                 'status'  => 'paid',
                 'paid_by' => $payer->id,
@@ -87,18 +83,13 @@ class PaymentLinkService
         ];
     }
 
-    /**
-     * Get all payment links for a user.
-     */
-    public function getUserLinks(User $user)
+    public function getUserLinks(User $user): LengthAwarePaginator
     {
         return PaymentLink::where('user_id', $user->id)
             ->with('payer:id,name,email')
             ->latest()
             ->paginate(15);
     }
-
-    // ─── Private ──────────────────────────────────────────────────────────────
 
     private function generateCode(): string
     {

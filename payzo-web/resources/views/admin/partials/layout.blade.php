@@ -19,12 +19,27 @@
         #sidebar {
             width: var(--sidebar-width);
             min-height: 100vh;
+            height: 100vh;
             background: #1e1b4b;
             position: fixed;
             top: 0; left: 0;
             display: flex;
             flex-direction: column;
             z-index: 100;
+            overflow-y: auto;
+        }
+
+        #sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,.15);
+            border-radius: 4px;
         }
 
         #sidebar .brand {
@@ -292,6 +307,16 @@
         <a href="{{ route('admin.cards') }}"
            class="nav-link {{ request()->routeIs('admin.cards') ? 'active' : '' }}">
             <i class="bi bi-credit-card"></i> Virtual Cards
+        </a>
+
+        <div class="nav-section">System</div>
+        <a href="{{ route('admin.kyc') }}"
+           class="nav-link {{ request()->routeIs('admin.kyc') ? 'active' : '' }}">
+            <i class="bi bi-person-check"></i> KYC Requests
+        </a>
+        <a href="{{ route('admin.audit-logs') }}"
+           class="nav-link {{ request()->routeIs('admin.audit-logs') ? 'active' : '' }}">
+            <i class="bi bi-journal-text"></i> Audit Logs
         </a>
     </nav>
 
