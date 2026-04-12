@@ -1,34 +1,28 @@
-import 'dart:io';
-
 class AppConstants {
-  // ── API Base URL ────────────────────────────────────────────────────────────
-  // Automatically resolves:
-  //   Android emulator  → 10.0.2.2      (maps to host machine localhost)
-  //   Physical device   → 192.168.0.200 (PC local IP on same WiFi)
-  //   iOS simulator     → 127.0.0.1
-  //   Production        → replace _productionUrl with your deployed API URL
-  static const _emulatorUrl   = 'http://10.0.2.2:8000/api';
-  static const _deviceUrl     = 'http://192.168.0.200:8000/api';
-  static const _iosUrl        = 'http://127.0.0.1:8000/api';
-  static const _productionUrl = 'https://your-production-domain.com/api';
+  // ── Base URLs ─────────────────────────────────────────────────────────────
+  //
+  // All URLs are injected at build time via --dart-define. Never hardcode
+  // production URLs or IPs in source. Examples:
+  //
+  // Dev (emulator):
+  //   flutter run --dart-define=BASE_URL=http://10.0.2.2:8000/api/v1
+  //
+  // Dev (physical device on LAN):
+  //   flutter run --dart-define=BASE_URL=http://192.168.x.x:8000/api/v1
+  //
+  // Release:
+  //   flutter build apk --dart-define=BASE_URL=https://api.yourapp.com/api/v1
+  //
+  static const baseUrl = String.fromEnvironment(
+    'BASE_URL',
+    defaultValue: 'http://10.0.2.2:8000/api/v1', // safe emulator fallback for local dev only
+  );
 
-  static String get baseUrl {
-    // Flip this to true when deploying to production
-    const isProduction = bool.fromEnvironment('PRODUCTION', defaultValue: false);
-    if (isProduction) return _productionUrl;
+  // ── Storage keys ──────────────────────────────────────────────────────────
+  static const tokenKey = 'auth_token';
+  static const userKey  = 'auth_user';
 
-    if (Platform.isIOS) return _iosUrl;
-
-    // Android: detect emulator by checking the ANDROID_EMULATOR env var
-    // or fall back to checking if the emulator host is reachable.
-    // The most reliable zero-config signal: emulators set ANDROID_EMULATOR=1
-    // or we use the --dart-define flag at build time.
-    const isEmulator = bool.fromEnvironment('IS_EMULATOR', defaultValue: false);
-    return isEmulator ? _emulatorUrl : _deviceUrl;
-  }
-
-  static const tokenKey       = 'auth_token';
-  static const userKey        = 'auth_user';
+  // ── Timeouts ──────────────────────────────────────────────────────────────
   static const connectTimeout = Duration(seconds: 15);
   static const receiveTimeout = Duration(seconds: 15);
 }

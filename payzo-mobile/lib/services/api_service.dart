@@ -1,26 +1,48 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:uuid/uuid.dart';
 import '../core/constants.dart';
 
 class ApiService {
   late final Dio _dio;
   final _storage = const FlutterSecureStorage();
+  final _uuid    = const Uuid();
 
   ApiService() {
     _dio = Dio(BaseOptions(
-      baseUrl: AppConstants.baseUrl,
+      baseUrl:        AppConstants.baseUrl,
       connectTimeout: AppConstants.connectTimeout,
       receiveTimeout: AppConstants.receiveTimeout,
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+      headers: {
+        'Accept':       'application/json',
+        'Content-Type': 'application/json',
+      },
     ));
+
+    // Log requests in debug builds only — never in release
+    if (kDebugMode) {
+      _dio.interceptors.add(LogInterceptor(
+        requestBody:  true,
+        responseBody: true,
+        logPrint: (o) => debugPrint(o.toString()),
+      ));
+    }
 
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          // Attach Bearer token
           final token = await _storage.read(key: AppConstants.tokenKey);
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+
+          // Attach idempotency key on every mutating request
+          if (['POST', 'PUT', 'PATCH'].contains(options.method)) {
+            options.headers['Idempotency-Key'] = _uuid.v4();
+          }
+
           handler.next(options);
         },
         onError: (error, handler) {
@@ -36,26 +58,30 @@ class ApiService {
   Future<Response> post(String path, {dynamic data}) =>
       _dio.post(path, data: data);
 
+  Future<Response> put(String path, {dynamic data}) =>
+      _dio.put(path, data: data);
+
+  Future<Response> patch(String path, {dynamic data}) =>
+      _dio.patch(path, data: data);
+
+  Future<Response> postForm(String path, {required FormData formData}) =>
+      _dio.post(path, data: formData,
+          options: Options(contentType: 'multipart/form-data'));
+
   Future<Response> delete(String path) => _dio.delete(path);
 
-  /// Saves the auth token securely.
   Future<void> saveToken(String token) =>
       _storage.write(key: AppConstants.tokenKey, value: token);
 
-  /// Clears the stored auth token.
   Future<void> clearToken() => _storage.delete(key: AppConstants.tokenKey);
 
-  /// Returns true if a token is stored.
   Future<bool> hasToken() async =>
       (await _storage.read(key: AppConstants.tokenKey)) != null;
 
-  /// Saves the user JSON securely.
   Future<void> saveUser(String userJson) =>
       _storage.write(key: AppConstants.userKey, value: userJson);
 
-  /// Reads the stored user JSON.
   Future<String?> readUser() => _storage.read(key: AppConstants.userKey);
 
-  /// Clears the stored user JSON.
   Future<void> clearUser() => _storage.delete(key: AppConstants.userKey);
 }

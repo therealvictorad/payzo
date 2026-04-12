@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../animations/animations.dart';
 import '../core/routes.dart';
 import '../core/theme.dart';
+import '../models/transaction.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/wallet_provider.dart';
+import '../widgets/kyc_banner.dart';
 import '../widgets/quick_action_card.dart';
 import '../widgets/shimmer_widgets.dart';
 import '../widgets/transaction_item.dart';
@@ -34,10 +36,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.watch(authProvider);
+    final user       = ref.watch(authProvider).user;
     final walletAsync = ref.watch(walletProvider);
-    final txState = ref.watch(transactionProvider);
-    final user = auth.user;
+    final txState    = ref.watch(transactionProvider);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cs     = Theme.of(context).colorScheme;
@@ -130,6 +131,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
 
+                    // ── KYC Banner ───────────────────────────────────────────
+                    if (user != null && user.kycStatus != 'verified')
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 0),
+                          child: KycBanner(
+                            kycStatus: user.kycStatus,
+                            onTap: () => Navigator.pushNamed(context, AppRoutes.kyc)
+                                .then((_) => _loadData()),
+                          ),
+                        ),
+                      ),
+
                     // ── Action Row ───────────────────────────────────────────
                     SliverToBoxAdapter(
                       child: _ActionRow(
@@ -159,8 +173,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 .then((_) => _loadData()),
                         onPaymentLinks: () =>
                             Navigator.pushNamed(context, AppRoutes.paymentLinks),
-                        onCards: () =>
-                            Navigator.pushNamed(context, AppRoutes.virtualCards),
                       ),
                     ),
 
@@ -185,7 +197,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       )
                     else if (txState.transactions.isEmpty)
-                      SliverToBoxAdapter(
+                      const SliverToBoxAdapter(
                         child: FadeSlideIn(
                           child: _EmptyTransactions(),
                         ),
@@ -194,11 +206,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (_, i) => TransactionItem(
-                            transaction: txState.transactions[i],
+                            transaction: _recentTx(txState)[i],
                             currentUserId: user?.id ?? 0,
                             index: i,
                           ),
-                          childCount: txState.transactions.take(5).length,
+                          childCount: _recentTx(txState).length,
                         ),
                       ),
 
@@ -212,24 +224,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
-
-  void _showLogoutSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => _LogoutSheet(
-        onLogout: () async {
-          Navigator.pop(context);
-          await ref.read(authProvider.notifier).logout();
-          if (context.mounted) {
-            Navigator.pushReplacementNamed(context, AppRoutes.login);
-          }
-        },
-      ),
-    );
-  }
 }
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+List<TransactionModel> _recentTx(TransactionState s) =>
+    s.transactions.take(5).toList();
 
 // ── Header ────────────────────────────────────────────────────────────────────
 
@@ -292,7 +292,7 @@ class _Header extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hi, Victor 👋',
+                    'Hi, ${(user?.name ?? 'there').split(' ').first} 👋',
                     style: TextStyle(
                       color: cs.onSurface,
                       fontSize: 18,
@@ -317,11 +317,20 @@ class _Header extends StatelessWidget {
           ),
           Row(
             children: [
-              _IconBtn(icon: Icons.notifications_outlined, onTap: () {}, badge: true),
+              _IconBtn(
+                icon: Icons.notifications_outlined,
+                onTap: () => _showComingSoon(context, 'Notifications'),
+              ),
               const SizedBox(width: 8),
-              _IconBtn(icon: Icons.qr_code_scanner_outlined, onTap: () {}),
+              _IconBtn(
+                icon: Icons.qr_code_scanner_outlined,
+                onTap: () => _showComingSoon(context, 'QR Scanner'),
+              ),
               const SizedBox(width: 8),
-              _IconBtn(icon: Icons.headset_mic_outlined, onTap: () {}),
+              _IconBtn(
+                icon: Icons.headset_mic_outlined,
+                onTap: () => _showComingSoon(context, 'Support'),
+              ),
             ],
           ),
         ],
@@ -346,7 +355,7 @@ class _BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -354,97 +363,73 @@ class _BalanceCard extends StatelessWidget {
             colors: [Color(0xFF7B6EF6), Color(0xFFAA5CF7), Color(0xFFD16BF0)],
             stops: [0.0, 0.55, 1.0],
           ),
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.45),
-              blurRadius: 36,
-              spreadRadius: -6,
-              offset: const Offset(0, 14),
-            ),
-            BoxShadow(
-              color: const Color(0xFFD16BF0).withOpacity(0.20),
-              blurRadius: 60,
-              spreadRadius: -10,
-              offset: const Offset(0, 28),
+              color: AppColors.primary.withOpacity(0.35),
+              blurRadius: 24,
+              spreadRadius: -4,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: Stack(
           children: [
-            // Decorative circle top-right
             Positioned(
-              top: -30,
-              right: -20,
+              top: -20,
+              right: -16,
               child: Container(
-                width: 120,
-                height: 120,
+                width: 90,
+                height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white.withOpacity(0.06),
                 ),
               ),
             ),
-            Positioned(
-              bottom: -40,
-              right: 40,
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.04),
-                ),
-              ),
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'TOTAL BALANCE',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'TOTAL BALANCE',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.2,
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 8),
                 CountUpText(
                   value: (wallet?.balance as num?)?.toDouble() ?? 0.0,
-                  prefix: '₦',
+                  prefix: '\u20a6',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 40,
+                    fontSize: 30,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -1.5,
+                    letterSpacing: -1.0,
                     height: 1.0,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 3),
                 Text(
                   'Available to spend',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.65),
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    letterSpacing: 0.1,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 14),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(10),
                   child: Material(
                     color: Colors.white.withOpacity(0.14),
                     child: InkWell(
@@ -452,27 +437,29 @@ class _BalanceCard extends StatelessWidget {
                       splashColor: Colors.white.withOpacity(0.18),
                       highlightColor: Colors.white.withOpacity(0.08),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white.withOpacity(0.22), width: 0.8),
-                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                              color: Colors.white.withOpacity(0.22), width: 0.8),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.receipt_long_outlined, color: Colors.white, size: 15),
-                            SizedBox(width: 8),
+                            Icon(Icons.receipt_long_outlined,
+                                color: Colors.white, size: 13),
+                            SizedBox(width: 6),
                             Text(
                               'Recent Activity',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 13,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                letterSpacing: 0.1,
                               ),
                             ),
-                            SizedBox(width: 6),
-                            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 10),
+                            SizedBox(width: 4),
+                            Icon(Icons.arrow_forward_ios_rounded,
+                                color: Colors.white70, size: 9),
                           ],
                         ),
                       ),
@@ -503,13 +490,13 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.fromLTRB(hPad, 16, hPad, 0),
+        padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 0),
         child: Row(
           children: [
-            Expanded(child: _ActionCard(label: 'To Payzo', icon: Icons.swap_horiz_rounded, onTap: onToPayzo)),
-            const SizedBox(width: 10),
-            Expanded(child: _ActionCard(label: 'To Bank', icon: Icons.account_balance_outlined, onTap: onToBank)),
-            const SizedBox(width: 10),
+            Expanded(child: _ActionCard(label: 'Send', icon: Icons.swap_horiz_rounded, onTap: onToPayzo)),
+            const SizedBox(width: 8),
+            Expanded(child: _ActionCard(label: 'Top Up', icon: Icons.account_balance_wallet_outlined, onTap: onToBank)),
+            const SizedBox(width: 8),
             Expanded(child: _ActionCard(label: 'Withdraw', icon: Icons.download_rounded, onTap: onWithdraw)),
           ],
         ),
@@ -536,7 +523,7 @@ class _ActionCard extends StatelessWidget {
         splashColor: cs.primary.withOpacity(0.10),
         highlightColor: cs.primary.withOpacity(0.05),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -585,7 +572,6 @@ class _QuickActionsSection extends StatelessWidget {
   final VoidCallback onTopup;
   final VoidCallback onBills;
   final VoidCallback onPaymentLinks;
-  final VoidCallback onCards;
   final double hPad;
 
   const _QuickActionsSection({
@@ -594,7 +580,6 @@ class _QuickActionsSection extends StatelessWidget {
     required this.onTopup,
     required this.onBills,
     required this.onPaymentLinks,
-    required this.onCards,
     required this.hPad,
   });
 
@@ -643,18 +628,6 @@ class _QuickActionsSection extends StatelessWidget {
         onTap: onPaymentLinks,
       ),
       _ActionData(
-        icon: Icons.credit_card_rounded,
-        label: 'Cards',
-        sublabel: 'Virtual',
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4ECDC4), Color(0xFF44A08D)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        glowColor: const Color(0xFF4ECDC4),
-        onTap: onCards,
-      ),
-      _ActionData(
         icon: Icons.receipt_long_rounded,
         label: 'History',
         sublabel: 'All time',
@@ -669,19 +642,19 @@ class _QuickActionsSection extends StatelessWidget {
     ];
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(hPad, 28, hPad, 0),
+      padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _SectionTag(label: 'QUICK ACTIONS'),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 1.05,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1.0,
             children: List.generate(
               actions.length,
               (i) => QuickActionCard(
@@ -841,67 +814,50 @@ class _SectionTag extends StatelessWidget {
   }
 }
 
+void _showComingSoon(BuildContext context, String feature) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('$feature — coming soon'),
+      behavior: SnackBarBehavior.floating,
+      duration: const Duration(seconds: 2),
+    ),
+  );
+}
+
 // ── Icon Button ───────────────────────────────────────────────────────────────
 
 class _IconBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  final bool badge;
 
   const _IconBtn({
     required this.icon,
     required this.onTap,
-    this.badge = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Material(
-          color: cs.surfaceContainer,
-          shape: const CircleBorder(),
-          elevation: 0,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            customBorder: const CircleBorder(),
-            splashColor: cs.primary.withOpacity(0.15),
-            highlightColor: cs.primary.withOpacity(0.08),
-            child: SizedBox(
-              width: 44,
-              height: 44,
-              child: Icon(
-                icon,
-                color: cs.onSurfaceVariant,
-                size: 20,
-              ),
-            ),
+    return Material(
+      color: cs.surfaceContainer,
+      shape: const CircleBorder(),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        splashColor: cs.primary.withOpacity(0.15),
+        highlightColor: cs.primary.withOpacity(0.08),
+        child: SizedBox(
+          width: 44,
+          height: 44,
+          child: Icon(
+            icon,
+            color: cs.onSurfaceVariant,
+            size: 20,
           ),
         ),
-        if (badge)
-          Positioned(
-            top: 8,
-            right: 8,
-            child: PulseGlow(
-              color: cs.error,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: cs.error,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: cs.surface,
-                    width: 1.5,
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
+      ),
     );
   }
 }
@@ -909,6 +865,8 @@ class _IconBtn extends StatelessWidget {
 // ── Empty State ───────────────────────────────────────────────────────────────
 
 class _EmptyTransactions extends StatelessWidget {
+  const _EmptyTransactions();
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -1051,128 +1009,4 @@ class _ErrorCard extends StatelessWidget {
   }
 }
 
-// ── Logout Sheet ──────────────────────────────────────────────────────────────
 
-class _LogoutSheet extends StatelessWidget {
-  final VoidCallback onLogout;
-
-  const _LogoutSheet({required this.onLogout});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Container(
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        padding: EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          24 + MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: cs.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 28),
-
-            // Icon
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: cs.error.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.logout_rounded,
-                color: cs.error,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            Text(
-              'Sign Out',
-              style: TextStyle(
-                color: cs.onSurface,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Are you sure you want to sign out\nof your Payzo account?',
-              style: TextStyle(
-                color: cs.onSurfaceVariant,
-                fontSize: 14,
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: cs.outlineVariant,
-                        width: 0.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      minimumSize: const Size(0, 54),
-                    ),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: cs.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onLogout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: cs.error,
-                      foregroundColor: cs.onError,
-                      minimumSize: const Size(0, 54),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Sign Out',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-  }
-}

@@ -11,50 +11,93 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class AdminService
 {
-    public function getAllUsers(): LengthAwarePaginator
+    public function getAllUsers(array $filters = []): LengthAwarePaginator
     {
-        return User::with('wallet')->latest()->paginate(20);
+        $query = User::with('wallet')->latest();
+
+        if ($search = $filters['search'] ?? null) {
+            $query->where(fn ($q) => $q
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+            );
+        }
+
+        if ($role = $filters['role'] ?? null) {
+            $query->where('role', $role);
+        }
+
+        if (isset($filters['is_frozen'])) {
+            $query->where('is_frozen', (bool) $filters['is_frozen']);
+        }
+
+        return $query->paginate(20);
     }
 
-    public function getAllTransactions(): LengthAwarePaginator
+    public function getAllTransactions(array $filters = []): LengthAwarePaginator
     {
-        return Transaction::with(['sender:id,name,email', 'receiver:id,name,email'])
-            ->latest()->paginate(20);
+        $query = Transaction::with(['sender:id,name,email', 'receiver:id,name,email'])->latest();
+
+        if ($status = $filters['status'] ?? null) {
+            $query->where('status', $status);
+        }
+
+        if ($type = $filters['type'] ?? null) {
+            $query->where('type', $type);
+        }
+
+        if ($date = $filters['date'] ?? null) {
+            $query->whereDate('created_at', $date);
+        }
+
+        return $query->paginate(20);
     }
 
-    public function getAllFraudLogs(): LengthAwarePaginator
+    public function getAllFraudLogs(array $filters = []): LengthAwarePaginator
     {
-        return FraudLog::with([
+        $query = FraudLog::with([
             'user:id,name,email',
-            'transaction:id,sender_id,receiver_id,amount,status,created_at',
-        ])->latest()->paginate(20);
+            'transaction:id,reference,sender_id,receiver_id,amount,status,created_at',
+            'resolvedBy:id,name,email',
+        ])->latest();
+
+        if ($riskLevel = $filters['risk_level'] ?? null) {
+            $query->where('risk_level', $riskLevel);
+        }
+
+        if ($resolution = $filters['resolution'] ?? null) {
+            $query->where('resolution', $resolution);
+        }
+
+        return $query->paginate(20);
     }
 
-    /** Airtime & data top-ups only */
     public function getAllTopups(): LengthAwarePaginator
     {
         return Transaction::with('sender:id,name,email')
             ->where('type', 'airtime')
-            ->latest()->paginate(20);
+            ->latest()
+            ->paginate(20);
     }
 
-    /** Bill payments only */
     public function getAllBills(): LengthAwarePaginator
     {
         return Transaction::with('sender:id,name,email')
             ->where('type', 'bill')
-            ->latest()->paginate(20);
+            ->latest()
+            ->paginate(20);
     }
 
     public function getAllPaymentLinks(): LengthAwarePaginator
     {
         return PaymentLink::with(['owner:id,name,email', 'payer:id,name,email'])
-            ->latest()->paginate(20);
+            ->latest()
+            ->paginate(20);
     }
 
     public function getAllCards(): LengthAwarePaginator
     {
         return VirtualCard::with('user:id,name,email')
-            ->latest()->paginate(20);
+            ->latest()
+            ->paginate(20);
     }
 }

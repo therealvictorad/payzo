@@ -2,20 +2,71 @@
 
 namespace App\Services;
 
+use App\Exceptions\FraudBlockException;
 use App\Models\FraudLog;
 use App\Models\Transaction;
 use App\Models\User;
 
 class FraudService
 {
-    // Fraud rules constants
+    // ─── Rule identifiers ─────────────────────────────────────────────────────
     const LARGE_TRANSACTION  = 'LARGE_TRANSACTION';
     const RAPID_TRANSACTIONS = 'RAPID_TRANSACTIONS';
     const UNUSUAL_TIME       = 'UNUSUAL_TIME';
+    const FROZEN_RECIPIENT   = 'FROZEN_RECIPIENT';
+
+    // ─── Dynamic thresholds (override via config/fraud.php or .env) ──────────
+    private function largeTransactionThreshold(): float
+    {
+        return (float) config('fraud.large_transaction_threshold', 50000);
+    }
+
+    private function rapidTransactionLimit(): int
+    {
+        return (int) config('fraud.rapid_transaction_limit', 5);
+    }
+
+    private function rapidTransactionWindow(): int
+    {
+        return (int) config('fraud.rapid_transaction_window_seconds', 60);
+    }
+
+    // ─── Pre-transaction blocking check ──────────────────────────────────────
 
     /**
-     * Evaluate all fraud rules against the given transaction.
-     * Logs any triggered rules — does NOT block the transaction.
+     * Run synchronous checks BEFORE the transaction is committed.
+     * Throws FraudBlockException to abort the transaction if HIGH risk is detected.
+     *
+     * @throws FraudBlockException
+     */
+    public function preCheck(User $sender, float $amount, ?User $receiver = null): void
+    {
+        // Block if sender account is frozen
+        if ($sender->isFrozen()) {
+            throw FraudBlockException::make();
+        }
+
+        // Block if receiver account is frozen
+        if ($receiver && $receiver->isFrozen()) {
+            throw FraudBlockException::make();
+        }
+
+        // Block if sender already has an open HIGH-risk fraud log
+        $hasOpenHighRisk = FraudLog::where('user_id', $sender->id)
+            ->where('risk_level', 'HIGH')
+            ->where('resolution', 'open')
+            ->exists();
+
+        if ($hasOpenHighRisk) {
+            throw FraudBlockException::make();
+        }
+    }
+
+    // ─── Post-transaction async evaluation ───────────────────────────────────
+
+    /**
+     * Evaluate all fraud rules after a transaction is committed.
+     * Called from the EvaluateFraud queued job — never on the HTTP thread.
      */
     public function evaluate(User $sender, Transaction $transaction): void
     {
@@ -24,33 +75,28 @@ class FraudService
         $this->checkUnusualTime($sender, $transaction);
     }
 
-    /**
-     * Flag transactions with amount > 1000 as HIGH risk.
-     */
+    // ─── Rules ────────────────────────────────────────────────────────────────
+
     private function checkLargeTransaction(User $sender, Transaction $transaction): void
     {
-        if ($transaction->amount > 1000) {
+        if ($transaction->amount >= $this->largeTransactionThreshold()) {
             $this->log($sender, $transaction, self::LARGE_TRANSACTION, 'HIGH');
         }
     }
 
-    /**
-     * Flag if sender makes more than 5 transactions within 1 minute (MEDIUM risk).
-     */
     private function checkRapidTransactions(User $sender, Transaction $transaction): void
     {
+        $window = now()->subSeconds($this->rapidTransactionWindow());
+
         $recentCount = Transaction::where('sender_id', $sender->id)
-            ->where('created_at', '>=', now()->subMinute())
+            ->where('created_at', '>=', $window)
             ->count();
 
-        if ($recentCount > 5) {
+        if ($recentCount > $this->rapidTransactionLimit()) {
             $this->log($sender, $transaction, self::RAPID_TRANSACTIONS, 'MEDIUM');
         }
     }
 
-    /**
-     * Flag transactions made between 12AM and 4AM as LOW risk.
-     */
     private function checkUnusualTime(User $sender, Transaction $transaction): void
     {
         $hour = now()->hour;
@@ -60,9 +106,6 @@ class FraudService
         }
     }
 
-    /**
-     * Persist a fraud log entry.
-     */
     private function log(User $sender, Transaction $transaction, string $rule, string $riskLevel): void
     {
         FraudLog::create([
@@ -70,6 +113,7 @@ class FraudService
             'transaction_id' => $transaction->id,
             'rule_triggered' => $rule,
             'risk_level'     => $riskLevel,
+            'resolution'     => 'open',
         ]);
     }
 }

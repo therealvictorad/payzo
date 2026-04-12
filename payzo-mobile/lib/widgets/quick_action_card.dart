@@ -221,7 +221,7 @@ class _CardBody extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // ── Icon container with gradient ──────────────────────────
             AnimatedBuilder(

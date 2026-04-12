@@ -1,0 +1,10 @@
+# Copy this file to key.properties and fill in your real values.
+# key.properties is gitignored and must NEVER be committed.
+#
+# Generate a keystore with:
+#   keytool -genkey -v -keystore payzo-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias payzo
+#
+storePassword=your_keystore_password
+keyPassword=your_key_password
+keyAlias=payzo
+storeFile=../payzo-release.jks

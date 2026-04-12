@@ -38,6 +38,13 @@ return [
             'report' => false,
         ],
 
+        // Explicit private disk for KYC documents — never publicly accessible
+        'private' => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private'),
+            'throw'  => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

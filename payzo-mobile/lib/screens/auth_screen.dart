@@ -51,6 +51,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
   }
 
   Future<void> _toggleMode() async {
+    ref.read(authProvider.notifier).clearError();
     await _switchCtrl.reverse();
     setState(() => _isLogin = !_isLogin);
     _switchCtrl.forward();
@@ -71,7 +72,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
       );
     }
     if (success && mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      final user = ref.read(authProvider).user;
+      final destination = (user != null && !user.hasTransactionPin)
+          ? AppRoutes.pinSetup
+          : AppRoutes.shell;
+      Navigator.pushReplacementNamed(context, destination);
     }
   }
 
@@ -268,6 +273,72 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                       ),
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              // Divider
+              FadeSlideIn(
+                delay: const Duration(milliseconds: 360),
+                child: Row(
+                  children: [
+                    Expanded(child: Divider(color: cs.outlineVariant, thickness: 0.5)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'or',
+                        style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: cs.outlineVariant, thickness: 0.5)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Guest button
+              FadeSlideIn(
+                delay: const Duration(milliseconds: 400),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.shell,
+                        ),
+                        icon: Icon(
+                          Icons.visibility_outlined,
+                          size: 18,
+                          color: cs.onSurfaceVariant,
+                        ),
+                        label: Text(
+                          'Continue as Guest',
+                          style: TextStyle(
+                            color: cs.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(
+                            color: cs.outlineVariant,
+                            width: 0.8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Explore the app without signing in',
+                      style: tt.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 40),

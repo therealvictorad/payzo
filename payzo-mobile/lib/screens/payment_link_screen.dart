@@ -48,7 +48,16 @@ class _PaymentLinkScreenState extends ConsumerState<PaymentLinkScreen>
     try {
       final links = await ref.read(paymentLinkServiceProvider).getMyLinks();
       if (mounted) setState(() => _links = links);
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load links: ${e.toString()}'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _createLink() async {

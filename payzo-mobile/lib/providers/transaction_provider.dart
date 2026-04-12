@@ -68,6 +68,10 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     state = state.copyWith(transferSuccess: false, error: null);
   }
 
+  void setError(String error) {
+    state = state.copyWith(isSending: false, error: error);
+  }
+
   String _parseError(Object e) {
     final msg = e.toString();
     if (msg.contains('422')) return 'Invalid input. Check the email or amount.';

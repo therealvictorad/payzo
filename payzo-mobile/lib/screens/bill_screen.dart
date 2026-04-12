@@ -154,17 +154,18 @@ class _BillScreenState extends ConsumerState<BillScreen> {
                   label:      _category == 'tv' ? 'Smart Card / IUC Number' : 'Meter Number',
                   hint:       _category == 'tv' ? 'e.g. 1234567890' : 'e.g. 45012345678',
                   controller: _customerCtrl,
+                  prefixIcon: Icons.tag_rounded,
                   keyboardType: TextInputType.number,
                   validator: (v) => (v == null || v.isEmpty) ? 'Enter customer ID' : null,
                 ),
 
                 const SizedBox(height: 20),
 
-                // ── Amount ───────────────────────────────────────────────
                 AppTextField(
                   label:      'Amount (₦)',
                   hint:       '2500',
                   controller: _amountCtrl,
+                  prefixIcon: Icons.payments_outlined,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Enter amount';

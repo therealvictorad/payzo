@@ -5,7 +5,9 @@ import '../services/bill_service.dart';
 import '../services/payment_link_service.dart';
 import '../services/payment_service.dart';
 import '../services/topup_service.dart';
+import '../services/kyc_service.dart';
 import '../services/transaction_service.dart';
+import '../services/user_service.dart';
 import '../services/virtual_card_service.dart';
 import '../services/wallet_service.dart';
 
@@ -41,4 +43,12 @@ final virtualCardServiceProvider = Provider<VirtualCardService>(
 
 final paymentServiceProvider = Provider<PaymentService>(
   (ref) => PaymentService(ref.read(apiServiceProvider)),
+);
+
+final kycServiceProvider = Provider<KycService>(
+  (ref) => KycService(ref.read(apiServiceProvider)),
+);
+
+final userServiceProvider = Provider<UserService>(
+  (ref) => UserService(ref.read(apiServiceProvider)),
 );
