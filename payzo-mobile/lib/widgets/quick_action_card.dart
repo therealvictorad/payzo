@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../core/theme.dart';
 
 // ── Public reusable widget ────────────────────────────────────────────────────
 
@@ -149,7 +148,7 @@ class _QuickActionCardState extends State<QuickActionCard>
                       // Press glow only — ambient shadow lives in _CardBody
                       BoxShadow(
                         color: widget.glowColor
-                            .withOpacity(0.45 * _glowAnim.value),
+                            .withValues(alpha: 0.45 * _glowAnim.value),
                         blurRadius: 24,
                         spreadRadius: -4,
                         offset: const Offset(0, 6),
@@ -211,7 +210,7 @@ class _CardBody extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.18 : 0.05),
+              color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.05),
               blurRadius: 16,
               spreadRadius: -2,
               offset: const Offset(0, 6),
@@ -238,7 +237,7 @@ class _CardBody extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          color: glowColor.withOpacity(isDark ? 0.3 : 0.18),
+                          color: glowColor.withValues(alpha: isDark ? 0.3 : 0.18),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -268,7 +267,7 @@ class _CardBody extends StatelessWidget {
               Text(
                 sublabel!,
                 style: TextStyle(
-                  color: glowColor.withOpacity(isDark ? 0.8 : 0.65),
+                  color: glowColor.withValues(alpha: isDark ? 0.8 : 0.65),
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.2,

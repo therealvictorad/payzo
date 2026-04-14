@@ -24,7 +24,7 @@ class KycBanner extends StatelessWidget {
         ),
       'rejected' => (
           color: cs.error,
-          bg:    cs.error.withOpacity(0.08),
+          bg:    cs.error.withValues(alpha: 0.08),
           icon:  Icons.cancel_outlined,
           title: 'Verification Rejected',
           sub:   'Tap to resubmit your documents.',
@@ -32,7 +32,7 @@ class KycBanner extends StatelessWidget {
         ),
       _ => (
           color: AppColors.primary,
-          bg:    AppColors.primary.withOpacity(0.07),
+          bg:    AppColors.primary.withValues(alpha: 0.07),
           icon:  Icons.verified_user_outlined,
           title: 'Verify Your Account',
           sub:   'Unlock higher transaction limits.',
@@ -47,14 +47,14 @@ class KycBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color:        config.bg,
           borderRadius: BorderRadius.circular(16),
-          border:       Border.all(color: config.color.withOpacity(0.25)),
+          border:       Border.all(color: config.color.withValues(alpha: 0.25)),
         ),
         child: Row(
           children: [
             Container(
               width: 40, height: 40,
               decoration: BoxDecoration(
-                color:        config.color.withOpacity(0.12),
+                color:        config.color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(config.icon, color: config.color, size: 20),
@@ -73,7 +73,7 @@ class KycBanner extends StatelessWidget {
                   Text(config.sub,
                       style: TextStyle(
                         fontSize: 11,
-                        color: config.color.withOpacity(0.75),
+                        color: config.color.withValues(alpha: 0.75),
                       )),
                 ],
               ),

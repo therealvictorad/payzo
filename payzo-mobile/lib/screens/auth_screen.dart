@@ -218,9 +218,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: cs.error.withOpacity(0.1),
+                      color: cs.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: cs.error.withOpacity(0.3)),
+                      border: Border.all(color: cs.error.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
@@ -335,7 +335,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     Text(
                       'Explore the app without signing in',
                       style: tt.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant.withOpacity(0.6),
+                        color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                     ),
                   ],

@@ -190,7 +190,7 @@ class _CardWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: (card.brand == 'visa' ? AppColors.primary : AppColors.error).withOpacity(0.2),
+              color: (card.brand == 'visa' ? AppColors.primary : AppColors.error).withValues(alpha: 0.2),
               blurRadius: 24,
               offset: const Offset(0, 8),
             ),
@@ -205,7 +205,7 @@ class _CardWidget extends StatelessWidget {
                 width: 130, height: 130,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.04),
+                  color: Colors.white.withValues(alpha: 0.04),
                 ),
               ),
             ),
@@ -241,7 +241,7 @@ class _CardWidget extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('CARD HOLDER', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 9, letterSpacing: 1)),
+                          Text('CARD HOLDER', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 9, letterSpacing: 1)),
                           const SizedBox(height: 2),
                           Text(card.cardHolder, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
                         ],
@@ -249,7 +249,7 @@ class _CardWidget extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('EXPIRES', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 9, letterSpacing: 1)),
+                          Text('EXPIRES', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 9, letterSpacing: 1)),
                           const SizedBox(height: 2),
                           Text(card.expiry, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
                         ],
@@ -281,7 +281,7 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: _color.withOpacity(0.15),
+          color: _color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(

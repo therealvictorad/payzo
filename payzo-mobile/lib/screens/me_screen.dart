@@ -87,26 +87,19 @@ class _MeScreenState extends ConsumerState<MeScreen> {
   /// is no session), then wipes the entire navigation stack and lands
   /// on the auth screen so back-button can never return to the shell.
   Future<void> _performLogout(BuildContext context) async {
-    // Close the bottom sheet first
-    Navigator.pop(context);
+    final navigator = Navigator.of(context);
+    navigator.pop();
 
-    // Clear auth state if user is authenticated.
-    // For guests (user == null) this is a no-op — no network call is made.
     final isAuthenticated = ref.read(authProvider).user != null;
     if (isAuthenticated) {
       await ref.read(authProvider.notifier).logout();
     } else {
-      // Guest: just reset the auth state in memory
       ref.read(authProvider.notifier).clearError();
     }
 
     if (!mounted) return;
 
-    // pushNamedAndRemoveUntil with (route) => false removes EVERY route
-    // from the stack — shell, any pushed screens, everything.
-    // The user cannot press back to return to the app.
-    Navigator.pushNamedAndRemoveUntil(
-      context,
+    navigator.pushNamedAndRemoveUntil(
       AppRoutes.auth,
       (route) => false,
     );
@@ -181,7 +174,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary.withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -197,9 +190,9 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                             width: 64, height: 64,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               border: Border.all(
-                                  color: Colors.white.withOpacity(0.4),
+                                  color: Colors.white.withValues(alpha: 0.4),
                                   width: 2),
                             ),
                             child: _avatarPath != null
@@ -227,7 +220,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                                 border: Border.all(
                                     color: AppColors.primary, width: 1.5),
                               ),
-                              child: Icon(Icons.camera_alt_rounded,
+                              child: const Icon(Icons.camera_alt_rounded,
                                   size: 11, color: AppColors.primary),
                             ),
                           ),
@@ -249,14 +242,14 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                           const SizedBox(height: 2),
                           Text(email,
                               style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                   fontSize: 11),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 10),
                           Text('Total Balance',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.65),
+                                color: Colors.white.withValues(alpha: 0.65),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.8,
@@ -289,7 +282,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                       child: Container(
                         width: 36, height: 36,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(Icons.edit_outlined,
@@ -303,7 +296,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
               const SizedBox(height: 28),
 
               // ── Security ──────────────────────────────────────────────
-              _SectionLabel(label: 'SECURITY'),
+              const _SectionLabel(label: 'SECURITY'),
               const SizedBox(height: 10),
               _NavTile(
                 icon: Icons.lock_outline_rounded,
@@ -331,7 +324,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
               const SizedBox(height: 28),
 
               // ── Preferences ───────────────────────────────────────────
-              _SectionLabel(label: 'PREFERENCES'),
+              const _SectionLabel(label: 'PREFERENCES'),
               const SizedBox(height: 10),
               _ToggleTile(
                 icon: Icons.dark_mode_outlined,
@@ -363,7 +356,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
               const SizedBox(height: 28),
 
               // ── Identity Verification ─────────────────────────────────────────────────────────────────────────────────
-              _SectionLabel(label: 'IDENTITY VERIFICATION'),
+              const _SectionLabel(label: 'IDENTITY VERIFICATION'),
               const SizedBox(height: 10),
               _KycTile(
                 kycStatus: user?.kycStatus ?? 'none',
@@ -374,7 +367,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
               const SizedBox(height: 28),
 
               // ── Support & Legal ───────────────────────────────────────
-              _SectionLabel(label: 'SUPPORT & LEGAL'),
+              const _SectionLabel(label: 'SUPPORT & LEGAL'),
               const SizedBox(height: 10),
               _NavTile(
                 icon: Icons.help_outline_rounded,
@@ -419,7 +412,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 54),
                     side: BorderSide(
-                        color: cs.error.withOpacity(0.4), width: 0.8),
+                        color: cs.error.withValues(alpha: 0.4), width: 0.8),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16)),
                   ),
@@ -457,7 +450,7 @@ class _SectionLabel extends StatelessWidget {
         const SizedBox(width: 8),
         Text(label,
             style: tt.labelSmall?.copyWith(
-                color: cs.onSurface.withOpacity(0.5), letterSpacing: 1.2)),
+                color: cs.onSurface.withValues(alpha: 0.5), letterSpacing: 1.2)),
       ],
     );
   }
@@ -496,7 +489,7 @@ class _NavTile extends StatelessWidget {
                         style: tt.titleSmall
                             ?.copyWith(color: cs.onSurface))),
                 Icon(Icons.chevron_right_rounded,
-                    color: cs.onSurface.withOpacity(0.3), size: 18),
+                    color: cs.onSurface.withValues(alpha: 0.3), size: 18),
               ],
             ),
           ),
@@ -544,10 +537,10 @@ class _NavTileTrailing extends StatelessWidget {
                             ?.copyWith(color: cs.onSurface))),
                 Text(trailing,
                     style: tt.bodyMedium?.copyWith(
-                        color: cs.onSurface.withOpacity(0.5))),
+                        color: cs.onSurface.withValues(alpha: 0.5))),
                 const SizedBox(width: 6),
                 Icon(Icons.chevron_right_rounded,
-                    color: cs.onSurface.withOpacity(0.3), size: 18),
+                    color: cs.onSurface.withValues(alpha: 0.3), size: 18),
               ],
             ),
           ),
@@ -607,7 +600,7 @@ class _TileIcon extends StatelessWidget {
     return Container(
       width: 38, height: 38,
       decoration: BoxDecoration(
-        color: cs.primary.withOpacity(0.1),
+        color: cs.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, color: cs.primary, size: 18),
@@ -719,7 +712,7 @@ class _KycTile extends StatelessWidget {
     final config = switch (kycStatus) {
       'verified' => (
           color: AppColors.success,
-          bg:    AppColors.success.withOpacity(0.08),
+          bg:    AppColors.success.withValues(alpha: 0.08),
           icon:  Icons.verified_user_rounded,
           label: 'Verified — ${kycLevel.toUpperCase()}',
           sub:   'Your identity has been verified.',
@@ -727,7 +720,7 @@ class _KycTile extends StatelessWidget {
         ),
       'pending' => (
           color: AppColors.warning,
-          bg:    AppColors.warning.withOpacity(0.08),
+          bg:    AppColors.warning.withValues(alpha: 0.08),
           icon:  Icons.hourglass_top_rounded,
           label: 'Verification Pending',
           sub:   'Your documents are under review.',
@@ -735,7 +728,7 @@ class _KycTile extends StatelessWidget {
         ),
       'rejected' => (
           color: cs.error,
-          bg:    cs.error.withOpacity(0.08),
+          bg:    cs.error.withValues(alpha: 0.08),
           icon:  Icons.cancel_outlined,
           label: 'Verification Rejected',
           sub:   'Tap to resubmit your documents.',
@@ -743,7 +736,7 @@ class _KycTile extends StatelessWidget {
         ),
       _ => (
           color: AppColors.primary,
-          bg:    AppColors.primary.withOpacity(0.07),
+          bg:    AppColors.primary.withValues(alpha: 0.07),
           icon:  Icons.shield_outlined,
           label: 'Verify Your Identity',
           sub:   'Unlock higher transaction limits.',
@@ -758,14 +751,14 @@ class _KycTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: config.bg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: config.color.withOpacity(0.2)),
+          border: Border.all(color: config.color.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
             Container(
               width: 42, height: 42,
               decoration: BoxDecoration(
-                color: config.color.withOpacity(0.12),
+                color: config.color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(config.icon, color: config.color, size: 22),
@@ -916,7 +909,7 @@ class _ChangePasswordSheetState extends State<_ChangePasswordSheet> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error.withOpacity(0.08),
+                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -982,7 +975,7 @@ class _PasswordField extends StatelessWidget {
             obscure
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
-            color: cs.onSurface.withOpacity(0.4),
+            color: cs.onSurface.withValues(alpha: 0.4),
             size: 18,
           ),
           onPressed: onToggle,
@@ -1061,7 +1054,7 @@ class _ChangePinSheetState extends State<_ChangePinSheet> {
           Container(
             width: 64, height: 64,
             decoration: BoxDecoration(
-              color: cs.primary.withOpacity(0.1),
+              color: cs.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.pin_outlined, color: cs.primary, size: 28),
@@ -1077,7 +1070,7 @@ class _ChangePinSheetState extends State<_ChangePinSheet> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: cs.error.withOpacity(0.08),
+                color: cs.error.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(_error!,
@@ -1142,7 +1135,7 @@ class _LogoutSheet extends StatelessWidget {
           Container(
             width: 64, height: 64,
             decoration: BoxDecoration(
-              color: cs.error.withOpacity(0.1),
+              color: cs.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.logout_rounded, color: cs.error, size: 28),

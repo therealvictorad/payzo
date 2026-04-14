@@ -128,7 +128,7 @@ class _BillScreenState extends ConsumerState<BillScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                         decoration: BoxDecoration(
                           color: active
-                              ? AppColors.primary.withOpacity(0.15)
+                              ? AppColors.primary.withValues(alpha: 0.15)
                               : Theme.of(context).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -212,7 +212,7 @@ class _CategoryCard extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 18),
             decoration: BoxDecoration(
-              color: active ? color.withOpacity(0.12) : Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: active ? color.withValues(alpha: 0.12) : Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(

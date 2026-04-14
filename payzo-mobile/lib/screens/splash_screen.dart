@@ -73,7 +73,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.5),
+                          color: AppColors.primary.withValues(alpha: 0.5),
                           blurRadius: 40,
                           offset: const Offset(0, 16),
                         ),
@@ -99,7 +99,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   Text(
                     'Move money, effortlessly.',
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.3,

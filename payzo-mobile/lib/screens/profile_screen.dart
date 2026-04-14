@@ -190,7 +190,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: cs.primary.withOpacity(0.35),
+                                  color: cs.primary.withValues(alpha: 0.35),
                                   blurRadius: 20,
                                   offset: const Offset(0, 6),
                                 ),
@@ -243,7 +243,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: _tierColor(tier).withOpacity(0.12),
+                        color: _tierColor(tier).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -260,7 +260,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 28),
 
               // ── Personal Info ─────────────────────────────────────────
-              _SectionLabel(label: 'PERSONAL INFORMATION'),
+              const _SectionLabel(label: 'PERSONAL INFORMATION'),
               const SizedBox(height: 12),
 
               _InfoTile(
@@ -314,7 +314,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 24),
 
               // ── Account Info ──────────────────────────────────────────
-              _SectionLabel(label: 'ACCOUNT INFORMATION'),
+              const _SectionLabel(label: 'ACCOUNT INFORMATION'),
               const SizedBox(height: 12),
 
               _InfoTile(
@@ -374,7 +374,7 @@ class _SectionLabel extends StatelessWidget {
         const SizedBox(width: 8),
         Text(label,
             style: tt.labelSmall?.copyWith(
-                color: cs.onSurface.withOpacity(0.5), letterSpacing: 1.2)),
+                color: cs.onSurface.withValues(alpha: 0.5), letterSpacing: 1.2)),
       ],
     );
   }
@@ -414,7 +414,7 @@ class _InfoTile extends StatelessWidget {
             children: [
               Text(label,
                   style: tt.labelSmall
-                      ?.copyWith(color: cs.onSurface.withOpacity(0.5))),
+                      ?.copyWith(color: cs.onSurface.withValues(alpha: 0.5))),
               const SizedBox(height: 2),
               Text(value,
                   style: tt.titleSmall?.copyWith(
@@ -468,7 +468,7 @@ class _EditableTile extends StatelessWidget {
               children: [
                 Text(label,
                     style: tt.labelSmall?.copyWith(
-                        color: cs.onSurface.withOpacity(0.5))),
+                        color: cs.onSurface.withValues(alpha: 0.5))),
                 TextField(
                   controller: controller,
                   keyboardType: keyboardType,
@@ -477,7 +477,7 @@ class _EditableTile extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: hint,
                     hintStyle: tt.bodySmall
-                        ?.copyWith(color: cs.onSurface.withOpacity(0.35)),
+                        ?.copyWith(color: cs.onSurface.withValues(alpha: 0.35)),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
@@ -529,7 +529,7 @@ class _TappableTile extends StatelessWidget {
                 children: [
                   Text(label,
                       style: tt.labelSmall?.copyWith(
-                          color: cs.onSurface.withOpacity(0.5))),
+                          color: cs.onSurface.withValues(alpha: 0.5))),
                   const SizedBox(height: 2),
                   Text(value,
                       style: tt.titleSmall?.copyWith(color: cs.onSurface)),
@@ -537,7 +537,7 @@ class _TappableTile extends StatelessWidget {
               ),
             ),
             Icon(Icons.chevron_right_rounded,
-                color: cs.onSurface.withOpacity(0.3), size: 18),
+                color: cs.onSurface.withValues(alpha: 0.3), size: 18),
           ],
         ),
       ),
@@ -582,7 +582,7 @@ class _DropdownTile extends StatelessWidget {
               children: [
                 Text(label,
                     style: tt.labelSmall?.copyWith(
-                        color: cs.onSurface.withOpacity(0.5))),
+                        color: cs.onSurface.withValues(alpha: 0.5))),
                 DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: value,
@@ -616,7 +616,7 @@ class _TileIcon extends StatelessWidget {
     return Container(
       width: 38, height: 38,
       decoration: BoxDecoration(
-        color: cs.primary.withOpacity(0.1),
+        color: cs.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, color: cs.primary, size: 18),

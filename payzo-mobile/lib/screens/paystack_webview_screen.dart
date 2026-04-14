@@ -144,7 +144,7 @@ class _PaystackWebViewScreenState extends ConsumerState<PaystackWebViewScreen> {
 
               if (_verifying)
                 Container(
-                  color: Theme.of(context).colorScheme.surface.withOpacity(0.92),
+                  color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,

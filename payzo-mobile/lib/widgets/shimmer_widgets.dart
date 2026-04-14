@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../core/theme.dart';
 
 class ShimmerBox extends StatelessWidget {
   final double width;

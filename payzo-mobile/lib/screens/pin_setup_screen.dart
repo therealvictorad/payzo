@@ -69,7 +69,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.4),
+                      color: AppColors.primary.withValues(alpha: 0.4),
                       blurRadius: 32,
                       offset: const Offset(0, 12),
                     ),
@@ -94,7 +94,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: cs.error.withOpacity(0.08),
+                    color: cs.error.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(

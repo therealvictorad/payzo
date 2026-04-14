@@ -108,9 +108,9 @@ class _TierInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color:        cs.primary.withOpacity(0.06),
+        color:        cs.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: cs.primary.withOpacity(0.15)),
+        border:       Border.all(color: cs.primary.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +180,7 @@ class _TierRow extends StatelessWidget {
             child: Icon(
               active ? Icons.radio_button_checked : Icons.radio_button_unchecked,
               size: 16,
-              color: active ? cs.primary : cs.onSurfaceVariant.withOpacity(0.4),
+              color: active ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.4),
             ),
           ),
           const SizedBox(width: 10),
@@ -205,8 +205,8 @@ class _TierRow extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     color: active
-                        ? cs.primary.withOpacity(0.7)
-                        : cs.onSurfaceVariant.withOpacity(0.6),
+                        ? cs.primary.withValues(alpha: 0.7)
+                        : cs.onSurfaceVariant.withValues(alpha: 0.6),
                   )),
             ],
           ),
@@ -306,7 +306,7 @@ class _SubmissionFormState extends ConsumerState<_SubmissionForm> {
           const SizedBox(height: 20),
 
           DropdownButtonFormField<String>(
-            value: _docType,
+            initialValue: _docType,
             decoration: InputDecoration(
               labelText: 'Document Type',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -389,12 +389,12 @@ class _SubmissionFormState extends ConsumerState<_SubmissionForm> {
                 border: Border.all(
                   color: _filePath != null
                       ? AppColors.success
-                      : cs.outline.withOpacity(0.5),
+                      : cs.outline.withValues(alpha: 0.5),
                   width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(12),
                 color: _filePath != null
-                    ? AppColors.success.withOpacity(0.05)
+                    ? AppColors.success.withValues(alpha: 0.05)
                     : cs.surfaceContainerHighest,
               ),
               child: Row(
@@ -443,7 +443,7 @@ class _SubmissionFormState extends ConsumerState<_SubmissionForm> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color:        cs.error.withOpacity(0.08),
+                color:        cs.error.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -505,7 +505,7 @@ class _VerifiedState extends StatelessWidget {
           Container(
             width: 88, height: 88,
             decoration: BoxDecoration(
-              color:  AppColors.success.withOpacity(0.1),
+              color:  AppColors.success.withValues(alpha: 0.1),
               shape:  BoxShape.circle,
             ),
             child: const Icon(Icons.verified_user_rounded,
@@ -521,7 +521,7 @@ class _VerifiedState extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color:        AppColors.success.withOpacity(0.08),
+              color:        AppColors.success.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -565,7 +565,7 @@ class _PendingState extends StatelessWidget {
           Container(
             width: 88, height: 88,
             decoration: BoxDecoration(
-              color:  AppColors.warning.withOpacity(0.1),
+              color:  AppColors.warning.withValues(alpha: 0.1),
               shape:  BoxShape.circle,
             ),
             child: const Icon(Icons.hourglass_top_rounded,
@@ -604,9 +604,9 @@ class _RejectedBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        cs.error.withOpacity(0.06),
+        color:        cs.error.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(16),
-        border:       Border.all(color: cs.error.withOpacity(0.2)),
+        border:       Border.all(color: cs.error.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

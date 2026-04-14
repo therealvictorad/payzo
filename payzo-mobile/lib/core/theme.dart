@@ -184,7 +184,7 @@ class AppShadows {
   static List<BoxShadow> card(bool isDark) => isDark
       ? [
           BoxShadow(
-            color: Colors.black.withOpacity(0.35),
+            color: Colors.black.withValues(alpha: 0.35),
             blurRadius: 20,
             spreadRadius: -4,
             offset: const Offset(0, 8),
@@ -192,13 +192,13 @@ class AppShadows {
         ]
       : [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.10),
+            color: AppColors.primary.withValues(alpha: 0.10),
             blurRadius: 20,
             spreadRadius: -2,
             offset: const Offset(0, 6),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -206,13 +206,13 @@ class AppShadows {
 
   static List<BoxShadow> balanceCard = [
     BoxShadow(
-      color: AppColors.primary.withOpacity(0.40),
+      color: AppColors.primary.withValues(alpha: 0.40),
       blurRadius: 40,
       spreadRadius: -8,
       offset: const Offset(0, 16),
     ),
     BoxShadow(
-      color: const Color(0xFFAA5CF7).withOpacity(0.20),
+      color: const Color(0xFFAA5CF7).withValues(alpha: 0.20),
       blurRadius: 60,
       spreadRadius: -10,
       offset: const Offset(0, 24),
@@ -221,7 +221,7 @@ class AppShadows {
 
   static List<BoxShadow> fab = [
     BoxShadow(
-      color: AppColors.primary.withOpacity(0.50),
+      color: AppColors.primary.withValues(alpha: 0.50),
       blurRadius: 20,
       spreadRadius: -4,
       offset: const Offset(0, 8),
@@ -311,7 +311,7 @@ class AppTheme {
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
           elevation: 0,
-          shadowColor: AppColors.primary.withOpacity(0.4),
+          shadowColor: AppColors.primary.withValues(alpha: 0.4),
           textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.2),
         ),
       ),
@@ -327,7 +327,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: card,
         elevation: isDark ? 0 : 2,
-        shadowColor: AppColors.primary.withOpacity(0.08),
+        shadowColor: AppColors.primary.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
@@ -353,7 +353,7 @@ class AppTheme {
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
-              ? AppColors.primary.withOpacity(0.35)
+              ? AppColors.primary.withValues(alpha: 0.35)
               : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
         ),
       ),

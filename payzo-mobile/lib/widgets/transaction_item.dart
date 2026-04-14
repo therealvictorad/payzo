@@ -76,7 +76,7 @@ class TransactionItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -108,10 +108,10 @@ class TransactionItem extends StatelessWidget {
                             Container(
                               width: 46, height: 46,
                               decoration: BoxDecoration(
-                                color: _avatarColor.withOpacity(0.15),
+                                color: _avatarColor.withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                    color: _avatarColor.withOpacity(0.3),
+                                    color: _avatarColor.withValues(alpha: 0.3),
                                     width: 1),
                               ),
                               child: Center(
@@ -147,7 +147,7 @@ class TransactionItem extends StatelessWidget {
                                   Row(
                                     children: [
                                       Icon(_typeIcon, size: 11,
-                                          color: _accentColor.withOpacity(0.8)),
+                                          color: _accentColor.withValues(alpha: 0.8)),
                                       const SizedBox(width: 3),
                                       Text(
                                         DateFormat('MMM d, h:mm a')
@@ -171,7 +171,7 @@ class TransactionItem extends StatelessWidget {
                                         color: Theme.of(context)
                                             .colorScheme
                                             .onSurfaceVariant
-                                            .withOpacity(0.55),
+                                            .withValues(alpha: 0.55),
                                         fontSize: 9.5,
                                         letterSpacing: 0.3,
                                         fontFamily: 'monospace',
@@ -402,9 +402,9 @@ class _StatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.25), width: 0.5),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

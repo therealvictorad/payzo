@@ -73,7 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      cs.primary.withOpacity(isDark ? 0.13 : 0.07),
+                      cs.primary.withValues(alpha: isDark ? 0.13 : 0.07),
                       Colors.transparent,
                     ],
                   ),
@@ -90,7 +90,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      cs.secondary.withOpacity(isDark ? 0.08 : 0.05),
+                      cs.secondary.withValues(alpha: isDark ? 0.08 : 0.05),
                       Colors.transparent,
                     ],
                   ),
@@ -265,7 +265,7 @@ class _Header extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: cs.primary.withOpacity(0.40),
+                          color: cs.primary.withValues(alpha: 0.40),
                           blurRadius: 14,
                           offset: const Offset(0, 4),
                         ),
@@ -366,7 +366,7 @@ class _BalanceCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.35),
+              color: AppColors.primary.withValues(alpha: 0.35),
               blurRadius: 24,
               spreadRadius: -4,
               offset: const Offset(0, 10),
@@ -383,7 +383,7 @@ class _BalanceCard extends StatelessWidget {
                 height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                 ),
               ),
             ),
@@ -393,7 +393,7 @@ class _BalanceCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
@@ -422,7 +422,7 @@ class _BalanceCard extends StatelessWidget {
                 Text(
                   'Available to spend',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.65),
+                    color: Colors.white.withValues(alpha: 0.65),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
@@ -431,16 +431,16 @@ class _BalanceCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Material(
-                    color: Colors.white.withOpacity(0.14),
+                    color: Colors.white.withValues(alpha: 0.14),
                     child: InkWell(
                       onTap: onRecentActivity,
-                      splashColor: Colors.white.withOpacity(0.18),
-                      highlightColor: Colors.white.withOpacity(0.08),
+                      splashColor: Colors.white.withValues(alpha: 0.18),
+                      highlightColor: Colors.white.withValues(alpha: 0.08),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: Colors.white.withOpacity(0.22), width: 0.8),
+                              color: Colors.white.withValues(alpha: 0.22), width: 0.8),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Row(
@@ -520,8 +520,8 @@ class _ActionCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        splashColor: cs.primary.withOpacity(0.10),
-        highlightColor: cs.primary.withOpacity(0.05),
+        splashColor: cs.primary.withValues(alpha: 0.10),
+        highlightColor: cs.primary.withValues(alpha: 0.05),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
@@ -538,8 +538,8 @@ class _ActionCard extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      cs.primary.withOpacity(0.18),
-                      cs.primary.withOpacity(0.08),
+                      cs.primary.withValues(alpha: 0.18),
+                      cs.primary.withValues(alpha: 0.08),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(14),
@@ -646,7 +646,7 @@ class _QuickActionsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _SectionTag(label: 'QUICK ACTIONS'),
+          const _SectionTag(label: 'QUICK ACTIONS'),
           const SizedBox(height: 12),
           GridView.count(
             crossAxisCount: 3,
@@ -755,11 +755,11 @@ class _SectionHeader extends StatelessWidget {
             child: InkWell(
               onTap: onAction,
               borderRadius: BorderRadius.circular(20),
-              splashColor: cs.primary.withOpacity(0.10),
+              splashColor: cs.primary.withValues(alpha: 0.10),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
-                  color: cs.primary.withOpacity(0.10),
+                  color: cs.primary.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -846,8 +846,8 @@ class _IconBtn extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
-        splashColor: cs.primary.withOpacity(0.15),
-        highlightColor: cs.primary.withOpacity(0.08),
+        splashColor: cs.primary.withValues(alpha: 0.15),
+        highlightColor: cs.primary.withValues(alpha: 0.08),
         child: SizedBox(
           width: 44,
           height: 44,
@@ -882,14 +882,14 @@ class _EmptyTransactions extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  cs.primary.withOpacity(0.15),
-                  cs.primary.withOpacity(0.06),
+                  cs.primary.withValues(alpha: 0.15),
+                  cs.primary.withValues(alpha: 0.06),
                 ],
               ),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: cs.primary.withOpacity(0.12),
+                  color: cs.primary.withValues(alpha: 0.12),
                   blurRadius: 28,
                   spreadRadius: 4,
                 ),
@@ -897,7 +897,7 @@ class _EmptyTransactions extends StatelessWidget {
             ),
             child: Icon(
               Icons.receipt_long_outlined,
-              color: cs.primary.withOpacity(0.7),
+              color: cs.primary.withValues(alpha: 0.7),
               size: 36,
             ),
           ),
@@ -941,10 +941,10 @@ class _ErrorCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 20),
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: cs.error.withOpacity(0.06),
+          color: cs.error.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: cs.error.withOpacity(0.18),
+            color: cs.error.withValues(alpha: 0.18),
             width: 0.5,
           ),
         ),
@@ -954,7 +954,7 @@ class _ErrorCard extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: cs.error.withOpacity(0.1),
+                color: cs.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -987,7 +987,7 @@ class _ErrorCard extends StatelessWidget {
             TextButton(
               onPressed: onRetry,
               style: TextButton.styleFrom(
-                backgroundColor: cs.error.withOpacity(0.1),
+                backgroundColor: cs.error.withValues(alpha: 0.1),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                 shape: RoundedRectangleBorder(

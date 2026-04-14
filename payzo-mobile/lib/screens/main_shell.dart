@@ -37,11 +37,11 @@ class _MainShellState extends ConsumerState<MainShell> {
           decoration: BoxDecoration(
             color: cs.surface,
             border: Border(
-              top: BorderSide(color: cs.outlineVariant.withOpacity(0.5), width: 0.8),
+              top: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.5), width: 0.8),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
                 blurRadius: 16,
                 offset: const Offset(0, -4),
               ),
@@ -112,7 +112,7 @@ class _NavItem extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: active ? cs.primary.withOpacity(0.12) : Colors.transparent,
+                color: active ? cs.primary.withValues(alpha: 0.12) : Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(

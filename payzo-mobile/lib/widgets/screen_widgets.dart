@@ -52,7 +52,7 @@ class ResultSheet extends StatelessWidget {
             Container(
               width: 72, height: 72,
               decoration: BoxDecoration(
-                color: (success ? AppColors.success : AppColors.error).withOpacity(0.12),
+                color: (success ? AppColors.success : AppColors.error).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(

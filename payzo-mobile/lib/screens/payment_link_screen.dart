@@ -122,7 +122,7 @@ class _PaymentLinkScreenState extends ConsumerState<PaymentLinkScreen>
             const SizedBox(height: 24),
             Container(
               width: 64, height: 64,
-              decoration: BoxDecoration(color: AppColors.success.withOpacity(0.12), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.12), shape: BoxShape.circle),
               child: const Icon(Icons.link_rounded, color: AppColors.success, size: 32),
             ),
             const SizedBox(height: 16),
@@ -312,7 +312,7 @@ class _LinkTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: _statusColor.withOpacity(0.12),
+                  color: _statusColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(link.status.toUpperCase(), style: TextStyle(color: _statusColor, fontSize: 9, fontWeight: FontWeight.w700)),

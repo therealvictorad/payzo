@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import '../core/theme.dart';
 
 /// A 4-digit PIN entry bottom sheet.
 /// Usage:
@@ -139,9 +137,9 @@ class _Keypad extends StatelessWidget {
             if (k.isEmpty) return const SizedBox(width: 80, height: 64);
             if (k == 'del') {
               return _KeyButton(
-                child: const Icon(Icons.backspace_outlined, size: 22),
-                onTap: onDelete,
-              );
+              onTap: onDelete,
+              child: const Icon(Icons.backspace_outlined, size: 22),
+            );
             }
             return _KeyButton(
               child: Text(k,

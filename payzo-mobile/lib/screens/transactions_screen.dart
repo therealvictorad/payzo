@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../animations/animations.dart';
-import '../core/theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/shimmer_widgets.dart';
