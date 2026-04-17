@@ -28,7 +28,7 @@ workflows:
           NEW_PATCH=$((PATCH + 1))
           NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}"
           gh release create "$NEW_TAG" \
-            ../build/app/outputs/flutter-apk/app-release.apk \
+            build/app/outputs/flutter-apk/app-release.apk \
             --repo "$CM_REPO_SLUG" \
             --title "Payzo $NEW_TAG" \
             --notes "Build $BUILD_NUMBER — automated release"
