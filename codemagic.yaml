@@ -21,13 +21,3 @@ workflows:
 
     artifacts:
       - payzo-mobile/build/app/outputs/flutter-apk/app-release.apk
-
-    publishing:
-      github:
-        releases:
-          release_name: "Payzo Build $BUILD_NUMBER"
-          tag: "v2.0.$BUILD_NUMBER"
-          draft: false
-          prerelease: false
-          asset_paths:
-            - payzo-mobile/build/app/outputs/flutter-apk/app-release.apk
