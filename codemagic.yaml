@@ -19,5 +19,21 @@ workflows:
       - name: Build APK
         script: flutter build apk --release
 
+      - name: Publish to GitHub Releases
+        script: |
+          LATEST_TAG=$(gh release list --repo "$CM_REPO_SLUG" --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "v0.0.0")
+          MAJOR=$(echo "$LATEST_TAG" | cut -d. -f1 | tr -d 'v')
+          MINOR=$(echo "$LATEST_TAG" | cut -d. -f2)
+          PATCH=$(echo "$LATEST_TAG" | cut -d. -f3)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+          gh release create "$NEW_TAG" \
+            ../build/app/outputs/flutter-apk/app-release.apk \
+            --repo "$CM_REPO_SLUG" \
+            --title "Payzo $NEW_TAG" \
+            --notes "Build $BUILD_NUMBER — automated release"
+        environment:
+          GITHUB_TOKEN: $GITHUB_TOKEN
+
     artifacts:
       - payzo-mobile/build/app/outputs/flutter-apk/*.apk
