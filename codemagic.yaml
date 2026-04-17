@@ -1,8 +1,11 @@
 workflows:
   payzo-android:
     name: Payzo Android Build
+
     environment:
       flutter: stable
+      groups:
+        - github_credentials
 
     working_directory: payzo-mobile
 
@@ -10,8 +13,20 @@ workflows:
       - name: Get packages
         script: flutter pub get
 
+      - name: Analyze code
+        script: flutter analyze
+
       - name: Build APK
         script: flutter build apk --release
 
     artifacts:
       - payzo-mobile/build/app/outputs/flutter-apk/app-release.apk
+
+    publishing:
+      github_releases:
+        release_name: "Payzo Build $BUILD_NUMBER"
+        tag: "v2.0.$BUILD_NUMBER"
+        draft: false
+        prerelease: false
+        asset_paths:
+          - payzo-mobile/build/app/outputs/flutter-apk/app-release.apk
