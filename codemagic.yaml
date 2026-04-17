@@ -19,12 +19,12 @@ workflows:
       - name: Build APK
         script: flutter build apk --release
 
-      - name: Publish to GitHub Releases
-        script: |
-          gh release create "v2.0.$BUILD_NUMBER" \
-            payzo-mobile/build/app/outputs/flutter-apk/app-release.apk \
-            --title "Payzo Build $BUILD_NUMBER" \
-            --repo "$CM_REPO_SLUG"
-
     artifacts:
-      - payzo-mobile/build/app/outputs/flutter-apk/app-release.apk
+      - payzo-mobile/build/app/outputs/flutter-apk/*.apk
+
+    publishing:
+      github_releases:
+        release_name: "Payzo Build $BUILD_NUMBER"
+        tag: "v2.0.$BUILD_NUMBER"
+        asset_paths:
+          - payzo-mobile/build/app/outputs/flutter-apk/*.apk
