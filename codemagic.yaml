@@ -32,8 +32,6 @@ workflows:
             --repo "$CM_REPO_SLUG" \
             --title "Payzo $NEW_TAG" \
             --notes "Build $BUILD_NUMBER — automated release"
-        environment:
-          GITHUB_TOKEN: $GITHUB_TOKEN
 
     artifacts:
       - payzo-mobile/build/app/outputs/flutter-apk/*.apk
